@@ -1,3 +1,8 @@
+data "aws_db_snapshot" "snapshot" {
+  db_snapshot_identifier = "alfresco-aurora-snapshot" #var.alf_snapshot_identifier
+  most_recent            = true
+}
+
 module "db" {
   source                 = "terraform-aws-modules/rds-aurora/aws"
   version                = "2.26.0"
@@ -8,7 +13,7 @@ module "db" {
   kms_key_id             = module.kms_key.kms_arn
   engine                 = "aurora-postgresql"
   engine_version         = "9.6.18"
-  snapshot_identifier    = "arn:aws:rds:eu-west-2:563502482979:snapshot:alfresco-database-snapshot" #var.alf_snapshot_identifier
+  snapshot_identifier    = data.aws_db_snapshot.snapshot.db_snapshot_arn
   vpc_id                 = local.vpc_id
   subnets                = flatten(local.db_subnet_ids)
   replica_count          = 1
@@ -18,8 +23,6 @@ module "db" {
   storage_encrypted      = true
   apply_immediately      = true
   monitoring_interval    = 10
-  # db_parameter_group_name         = "default"
-  # db_cluster_parameter_group_name = "default"
   enabled_cloudwatch_logs_exports = ["postgresql"]
   preferred_maintenance_window    = lookup(var.alf_rds_props, "maintenance_window", "wed:19:30-wed:21:30")
   preferred_backup_window         = lookup(var.alf_rds_props, "backup_window", "02:00-04:00")

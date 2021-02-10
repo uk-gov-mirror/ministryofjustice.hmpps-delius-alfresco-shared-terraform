@@ -218,7 +218,7 @@ locals {
   short_environment_identifier = data.terraform_remote_state.common.outputs.short_environment_identifier
   ssh_deployer_key             = data.terraform_remote_state.common.outputs.common_ssh_deployer_key
   tracker_host                 = "${lookup(local.solr_asg_props, "tracker_host", "alf-tracker")}.${local.external_domain}"
-  solr_host                    = "${lookup(local.solr_asg_props, "solr_ha_host", "alf-solr-ha")}.${local.external_domain}"
+  solr_host                    = "solr_ha.${local.internal_domain}"
   solr_port                    = 8983
   tags                         = data.terraform_remote_state.common.outputs.common_tags
   tomcat_host                  = "alfresco"

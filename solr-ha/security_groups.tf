@@ -97,3 +97,22 @@ resource "aws_security_group_rule" "alf_lb_egress_https" {
   source_security_group_id = aws_security_group.sg_solr_alb.id
 }
 
+resource "aws_security_group_rule" "alf_egress_solr_alb" {
+  security_group_id        = local.instance_sg
+  type                     = "egress"
+  from_port                = local.solr_port
+  to_port                  = local.solr_port
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.sg_solr_alb.id
+  description              = "alb to solr"
+}
+
+resource "aws_security_group_rule" "alf_ingress_to_solr_lb" {
+  security_group_id        = aws_security_group.sg_solr_alb.id
+  from_port                = local.solr_port
+  to_port                  = local.solr_port
+  protocol                 = "tcp"
+  type                     = "ingress"
+  description              = "${local.common_name}-alf-https"
+  source_security_group_id = local.instance_sg
+}

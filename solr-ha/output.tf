@@ -18,3 +18,7 @@ output "alb_dns_cname" {
   value = aws_route53_record.dns_entry.fqdn
 }
 
+output "alb_dns_internal" {
+  value = aws_route53_record.dns_internal.fqdn
+}
+

@@ -40,10 +40,21 @@ resource "aws_lb" "environment" {
 ###############################################
 # Create route53 entry for solr lb
 ###############################################
-
 resource "aws_route53_record" "dns_entry" {
   zone_id = local.public_zone_id
-  name    = local.solr_host
+  name    = "${lookup(local.solr_asg_props, "solr_ha_host", "alf-solr-ha")}.${local.external_domain}"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.environment.dns_name
+    zone_id                = aws_lb.environment.zone_id
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "dns_internal" {
+  zone_id = local.private_zone_id
+  name    = "solr_ha.${local.internal_domain}"
   type    = "A"
 
   alias {
@@ -54,9 +65,19 @@ resource "aws_route53_record" "dns_entry" {
 }
 
 # listener
+resource "aws_lb_listener" "solr_listener" {
+  load_balancer_arn = aws_lb.environment.arn
+  port              = local.solr_port
+  protocol          = local.http_protocol
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.environment.arn
+  }
+}
+
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.environment.arn
-  port              = local.http_port
+  port              = 80
   protocol          = local.http_protocol
   default_action {
     type             = "forward"
