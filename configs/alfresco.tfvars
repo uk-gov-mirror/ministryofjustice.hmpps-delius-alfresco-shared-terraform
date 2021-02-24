@@ -18,6 +18,6 @@ source_code_versions = {
   logstash         = "1.0.1"
   elasticbeats     = "1.0.1"
   solr             = "0.0.6"
-  solr_ha          = "0.0.1"
+  solr_ha          = "0.0.2"
   esadmin          = "0.0.6"
 }

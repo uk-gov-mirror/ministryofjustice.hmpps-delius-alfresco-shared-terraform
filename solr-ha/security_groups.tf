@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "external_lb_ingress_http" {
   protocol          = "tcp"
   type              = "ingress"
   description       = "${local.common_name}-http"
-  cidr_blocks = flatten(local.allowed_cidr_block)
+  cidr_blocks       = flatten(local.allowed_cidr_block)
 }
 
 resource "aws_security_group_rule" "external_lb_ingress_https" {
@@ -53,7 +53,17 @@ resource "aws_security_group_rule" "external_lb_ingress_https" {
   protocol          = "tcp"
   type              = "ingress"
   description       = "${local.common_name}-https"
-  cidr_blocks = flatten(local.allowed_cidr_block)
+  cidr_blocks       = flatten(local.allowed_cidr_block)
+}
+
+resource "aws_security_group_rule" "external_lb_ingress_solr" {
+  security_group_id = aws_security_group.sg_solr_alb.id
+  from_port         = 8983
+  to_port           = 8983
+  protocol          = "tcp"
+  type              = "ingress"
+  description       = "${local.common_name}-solr"
+  cidr_blocks       = flatten(local.allowed_cidr_block)
 }
 
 # alfresco to alb
@@ -108,7 +118,7 @@ resource "aws_security_group_rule" "alf_egress_solr_alb" {
 }
 
 resource "aws_security_group_rule" "alf_ingress_to_solr_lb" {
-  security_group_id        = aws_security_group.sg_solr_alb.id
+  security_group_id        = local.instance_sg
   from_port                = local.solr_port
   to_port                  = local.solr_port
   protocol                 = "tcp"
