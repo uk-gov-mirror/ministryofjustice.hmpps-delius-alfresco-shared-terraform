@@ -118,7 +118,7 @@ resource "aws_security_group_rule" "alf_egress_solr_alb" {
 }
 
 resource "aws_security_group_rule" "alf_ingress_to_solr_lb" {
-  security_group_id        = local.instance_sg
+  security_group_id        = aws_security_group.sg_solr_alb.id
   from_port                = local.solr_port
   to_port                  = local.solr_port
   protocol                 = "tcp"
